@@ -1,18 +1,19 @@
-import speech_recognition as sr
 import os
 import webbrowser
 import openai
-from config import apikey
 import datetime
 import random
+import speech_recognition as sr
+from config import apikey
 
+# Global chat history
 chatStr = ""
 
+# Function to handle OpenAI Chat API
 def chat(query):
     global chatStr
-    print(chatStr)
     openai.api_key = apikey
-    chatStr += f"Rushabh:{query}\nJarvis: "
+    chatStr += f"Rushabh: {query}\nJarvis: "
     try:
         response = openai.ChatCompletion.create(
             model="gpt-4",
@@ -35,6 +36,7 @@ def chat(query):
         say("There was an issue processing your request.")
         return "Error in API request."
 
+# Function to handle tasks for "Steve"
 def ai(prompt):
     openai.api_key = apikey
     text = f"OpenAI response for Prompt: {prompt}\n*************************\n\n"
@@ -71,10 +73,11 @@ def ai(prompt):
         print(f"Error with OpenAI API or file operation: {e}")
         say("There was an issue processing your request.")
 
-
+# Function to speak text
 def say(text):
     os.system(f'say "{text}"')
 
+# Function to capture audio commands
 def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -89,24 +92,49 @@ def takeCommand():
             print(f"Error recognizing speech: {e}")
             return "Some Error Occurred. Sorry from Jarvis"
 
+# Function to open websites
+def openWebsite(query):
+    websites = {
+        "google": "https://www.google.com",
+        "youtube": "https://www.youtube.com",
+        "bbc": "https://www.bbc.co.uk",
+        "skysports": "https://www.skysports.com",
+        "pokerstars": "https://www.pokerstars.uk",
+        "stackoverflow": "https://stackoverflow.com",
+        "linkedin": "https://www.linkedin.com",
+        "twitter": "https://twitter.com",
+        "facebook": "https://www.facebook.com",
+        "instagram": "https://www.instagram.com",
+        "netflix": "https://www.netflix.com",
+        "amazon": "https://www.amazon.com",
+        "spotify": "https://www.spotify.com",
+        "reddit": "https://www.reddit.com",
+        "apple": "https://www.apple.com",
+        "zoom": "https://zoom.us"
+    }
+
+    for key, value in websites.items():
+        if f"open {key}" in query.lower():
+            say(f"Opening {key}...")
+            webbrowser.open(value)
+            return True
+    return False
+
+# Main execution
 if __name__ == '__main__':
     print('Welcome to Jarvis A.I')
     say("Jarvis is ready")
     while True:
         query = takeCommand()
-        if "open" in query.lower():
-            sites = [["pokerstars","https://www.pokerstars.uk/"], ["google", "https://www.google.com"],["bbc", "https://www.bbc.co.uk"],["skysport","https://www.skysports.com"],["youtube","https://www.youtube.com"]]
-            for site in sites:
-                if f"open {site[0]}".lower() in query.lower():
-                    say(f"Opening {site[0]} sir...")
-                    webbrowser.open(site[1])
-                    break
 
-        elif "the time" in query:
+        if "open" in query.lower():
+            if not openWebsite(query):
+                say("Sorry, I couldn't find the website in my list.")
+
+        elif "the time" in query.lower():
             hour = datetime.datetime.now().strftime("%H")
             minute = datetime.datetime.now().strftime("%M")
             say(f"The time is {hour} hours and {minute} minutes.")
-
         elif "open facetime" in query.lower():
             os.system("open /System/Applications/FaceTime.app")
             say("Opening FaceTime")
@@ -148,11 +176,6 @@ if __name__ == '__main__':
             os.system("open /System/Applications/Arc.app")
             say("Opening Arc")
 
-
-
-        elif "Friday" in query.lower():
-            ai(prompt=query)
-
         elif "jarvis quit" in query.lower():
             say("Goodbye, sir!")
             break
@@ -160,6 +183,10 @@ if __name__ == '__main__':
         elif "reset chat" in query.lower():
             chatStr = ""
             say("Chat history reset.")
+
+        elif "steve" in query.lower():
+            # Send the command to Steve and save it to Jarvis Files
+            ai(prompt=query)
 
         else:
             chat(query)
