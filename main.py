@@ -102,15 +102,10 @@ def openWebsite(query):
         "pokerstars": "https://www.pokerstars.uk",
         "stackoverflow": "https://stackoverflow.com",
         "linkedin": "https://www.linkedin.com",
-        "twitter": "https://twitter.com",
         "facebook": "https://www.facebook.com",
         "instagram": "https://www.instagram.com",
         "netflix": "https://www.netflix.com",
-        "amazon": "https://www.amazon.com",
-        "spotify": "https://www.spotify.com",
-        "reddit": "https://www.reddit.com",
-        "apple": "https://www.apple.com",
-        "zoom": "https://zoom.us"
+        "amazon": "https://www.amazon.com"
     }
 
     for key, value in websites.items():
